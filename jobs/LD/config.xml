@@ -1,0 +1,76 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job@2.39">
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <jenkins.model.BuildDiscarderProperty>
+      <strategy class="hudson.tasks.LogRotator">
+        <daysToKeep>3</daysToKeep>
+        <numToKeep>5</numToKeep>
+        <artifactDaysToKeep>-1</artifactDaysToKeep>
+        <artifactNumToKeep>-1</artifactNumToKeep>
+      </strategy>
+    </jenkins.model.BuildDiscarderProperty>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <com.cwctravel.hudson.plugins.extended__choice__parameter.ExtendedChoiceParameterDefinition plugin="extended-choice-parameter@0.78">
+          <name>STEPS</name>
+          <description></description>
+          <quoteValue>false</quoteValue>
+          <saveJSONParameterToFile>false</saveJSONParameterToFile>
+          <visibleItemCount>4</visibleItemCount>
+          <type>PT_CHECKBOX</type>
+          <value>TT,ZD,JT,SHUTDOWN</value>
+          <defaultValue>TT,ZD,JT</defaultValue>
+          <multiSelectDelimiter>,</multiSelectDelimiter>
+        </com.cwctravel.hudson.plugins.extended__choice__parameter.ExtendedChoiceParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>LD_HOME</name>
+          <description></description>
+          <defaultValue>F:\tools\LD</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+    <org.jenkinsci.plugins.workflow.job.properties.DisableConcurrentBuildsJobProperty/>
+    <org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
+      <triggers>
+        <hudson.triggers.TimerTrigger>
+          <spec>H 6 * * *</spec>
+        </hudson.triggers.TimerTrigger>
+      </triggers>
+    </org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
+  </properties>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.81">
+    <script>node(&apos;master&apos;) {
+    dir(&quot;${LD_HOME}&quot;) {
+        if (&quot;${STEPS}&quot;.contains(&quot;TT&quot;)) {
+            stage(&apos;TT&apos;) {
+                bat &apos;python ld.py tt&apos;
+            }
+        }
+        if (&quot;${STEPS}&quot;.contains(&quot;ZD&quot;)) {
+            stage(&apos;ZD&apos;) {
+                bat &apos;python ld.py zd&apos;
+            }
+        }
+        if (&quot;${STEPS}&quot;.contains(&quot;JT&quot;)) {
+            stage(&apos;JT&apos;) {
+                bat &apos;python ld.py jt&apos;
+            }
+        }
+        if (&quot;${STEPS}&quot;.contains(&quot;JT&quot;)) {
+            stage(&apos;SHUTDOWN&apos;) {
+                bat &apos;shutdown -s -t 0&apos;
+            }
+        }
+    }
+}
+
+</script>
+    <sandbox>true</sandbox>
+  </definition>
+  <triggers/>
+  <disabled>false</disabled>
+</flow-definition>
